@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attachment Style Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #312e81 0%, #7e22ce 50%, #be185d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 42rem;
+            width: 100%;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+
+        /* Welcome Screen */
+        .welcome {
+            text-align: center;
+        }
+
+        .title-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .title-glow {
+            position: absolute;
+            inset: 0;
+            filter: blur(80px);
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            opacity: 0.3;
+            border-radius: 50%;
+        }
+
+        .title {
+            position: relative;
+            font-size: 3.75rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .title-gradient {
+            display: block;
+            background: linear-gradient(to right, #f9a8d4, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: 1.25rem;
+            color: #e5e7eb;
+            max-width: 28rem;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            opacity: 0;
+            filter: blur(20px);
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover .btn-glow {
+            opacity: 0.2;
+        }
+
+        /* Quiz Screen */
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-bars {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 0.5rem;
+            border-radius: 9999px;
+            transition: all 0.5s;
+        }
+
+        .progress-bar.completed {
+            width: 3rem;
+            background: linear-gradient(to right, #f9a8d4, #c4b5fd);
+        }
+
+        .progress-bar.current {
+            width: 4rem;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .progress-bar.upcoming {
+            width: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            line-height: 1.6;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Result Screen */
+        .result-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .result-header {
+            text-align: center;
+        }
+
+        .result-icon {
+            display: inline-flex;
+            padding: 1.5rem;
+            border-radius: 9999px;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .result-icon.secure {
+            background: linear-gradient(135deg, #fb7185, #db2777);
+        }
+
+        .result-icon.anxious {
+            background: linear-gradient(135deg, #fbbf24, #ea580c);
+        }
+
+        .result-icon.avoidant {
+            background: linear-gradient(135deg, #34d399, #0d9488);
+        }
+
+        .result-icon.fearful {
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+        }
+
+        .result-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .result-description {
+            font-size: 1.25rem;
+            color: #e5e7eb;
+            max-width: 32rem;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .result-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .traits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .trait-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+        }
+
+        .growth-text {
+            color: #e5e7eb;
+            line-height: 1.6;
+        }
+
+        .result-actions {
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .result-title {
+                font-size: 2rem;
+            }
+
+            .traits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="app" class="fade-in"></div>
+    </div>
+
+    <script>
+        const TRANSLATIONS = {
+            "en-US": {
+                "discoverTitle": "Discover Your",
+                "attachmentStyleTitle": "Attachment Style",
+                "welcomeDescription": "Understanding how you connect with others can transform your relationships and deepen self-awareness",
+                "beginJourneyButton": "Begin Your Journey",
+                "takeQuizAgainButton": "Take Quiz Again",
+                "progressIndicator": "of",
+                "yourStrengthsTitle": "Your Strengths",
+                "growthPathTitle": "Growth Path",
+                "question1": "When someone I care about pulls away, I tend to...",
+                "question1Option1": "Give them space while staying available",
+                "question1Option2": "Worry they're losing interest in me",
+                "question1Option3": "Focus on other things in my life",
+                "question1Option4": "Feel confused and withdraw myself",
+                "question2": "In relationships, I find it easiest to...",
+                "question2Option1": "Share my feelings openly and honestly",
+                "question2Option2": "Express my needs, even if it feels vulnerable",
+                "question2Option3": "Keep some parts of myself private",
+                "question2Option4": "Struggle between wanting closeness and independence",
+                "question3": "When it comes to depending on others, I...",
+                "question3Option1": "Feel comfortable asking for help when needed",
+                "question3Option2": "Often seek reassurance from those close to me",
+                "question3Option3": "Prefer to handle things on my own",
+                "question3Option4": "Want support but fear being a burden",
+                "question4": "My ideal relationship dynamic involves...",
+                "question4Option1": "Balance between togetherness and independence",
+                "question4Option2": "Lots of quality time and emotional closeness",
+                "question4Option3": "Maintaining my autonomy and personal space",
+                "question4Option4": "Finding someone who understands my complexity",
+                "question5": "When conflicts arise in relationships, I typically...",
+                "question5Option1": "Address them calmly and work toward resolution",
+                "question5Option2": "Feel anxious until we've talked it through",
+                "question5Option3": "Need time alone before discussing",
+                "question5Option4": "Feel overwhelmed and unsure how to respond",
+                "question6": "Trust in relationships comes...",
+                "question6Option1": "Naturally as I get to know someone",
+                "question6Option2": "With constant reassurance and validation",
+                "question6Option3": "Slowly, and I maintain healthy skepticism",
+                "question6Option4": "In waves - sometimes easily, sometimes not at all",
+                "secureAttachmentTitle": "Secure Attachment",
+                "secureAttachmentDescription": "You have a healthy, balanced approach to relationships. You're comfortable with intimacy and independence, can effectively communicate your needs, and trust comes naturally to you.",
+                "secureAttachmentTrait1": "Emotionally available",
+                "secureAttachmentTrait2": "Good at setting boundaries",
+                "secureAttachmentTrait3": "Comfortable with intimacy",
+                "secureAttachmentTrait4": "Effective communicator",
+                "secureAttachmentGrowth": "Your secure foundation allows you to form deep, meaningful connections. Continue nurturing your relationships with open communication and empathy.",
+                "anxiousAttachmentTitle": "Anxious Attachment",
+                "anxiousAttachmentDescription": "You deeply value close relationships and may sometimes worry about your partner's feelings toward you. You have a big heart and capacity for deep emotional connection.",
+                "anxiousAttachmentTrait1": "Highly empathetic",
+                "anxiousAttachmentTrait2": "Values emotional closeness",
+                "anxiousAttachmentTrait3": "Intuitive about others' feelings",
+                "anxiousAttachmentTrait4": "Passionate and caring",
+                "anxiousAttachmentGrowth": "Practice self-soothing techniques and build your sense of self-worth independent of relationships. Your sensitivity is a strength when balanced with self-assurance.",
+                "avoidantAttachmentTitle": "Avoidant Attachment",
+                "avoidantAttachmentDescription": "You value your independence and self-reliance. While you can form relationships, you prefer maintaining some emotional distance and personal space.",
+                "avoidantAttachmentTrait1": "Self-reliant",
+                "avoidantAttachmentTrait2": "Independent thinker",
+                "avoidantAttachmentTrait3": "Strong boundaries",
+                "avoidantAttachmentTrait4": "Values personal growth",
+                "avoidantAttachmentGrowth": "Challenge yourself to share vulnerable moments with trusted people. Your independence is valuable, and combining it with emotional openness can deepen your connections.",
+                "fearfulAttachmentTitle": "Fearful-Avoidant Attachment",
+                "fearfulAttachmentDescription": "You experience a complex mix of wanting close relationships while also fearing vulnerability. This creates a unique depth and understanding of human complexity.",
+                "fearfulAttachmentTrait1": "Deeply introspective",
+                "fearfulAttachmentTrait2": "Highly perceptive",
+                "fearfulAttachmentTrait3": "Complex emotional range",
+                "fearfulAttachmentTrait4": "Resilient",
+                "fearfulAttachmentGrowth": "Practice self-compassion and gradual vulnerability with safe people. Your ability to see multiple perspectives is a gift that can lead to profound connections."
+            }
+        };
+
+        const locale = 'en-US';
+        const t = (key) => TRANSLATIONS[locale]?.[key] || TRANSLATIONS['en-US'][key] || key;
+
+        const state = {
+            currentScreen: 'welcome',
+            currentQuestion: 0,
+            answers: [],
+            result: null
+        };
+
+        const questions = [
+            {
+                text: t('question1'),
+                options: [
+                    { text: t('question1Option1'), score: { secure: 3, anxious: 0, avoidant: 1, fearful: 1 } },
+                    { text: t('question1Option2'), score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+                    { text: t('question1Option3'), score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: t('question1Option4'), score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: t('question2'),
+                options: [
+                    { text: t('question2Option1'), score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: t('question2Option2'), score: { secure: 2, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: t('question2Option3'), score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
+                    { text: t('question2Option4'), score: { secure: 0, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: t('question3'),
+                options: [
+                    { text: t('question3Option1'), score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+                    { text: t('question3Option2'), score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: t('question3Option3'), score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: t('question3Option4'), score: { secure: 1, anxious: 1, avoidant: 1, fearful: 3 } }
+                ]
+            },
+            {
+                text: t('question4'),
+                options: [
+                    { text: t('question4Option1'), score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+                    { text: t('question4Option2'), score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: t('question4Option3'), score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: t('question4Option4'), score: { secure: 0, anxious: 1, avoidant: 0, fearful: 3 } }
+                ]
+            },
+            {
+                text: t('question5'),
+                options: [
+                    { text: t('question5Option1'), score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+                    { text: t('question5Option2'), score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: t('question5Option3'), score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: t('question5Option4'), score: { secure: 0, anxious: 1, avoidant: 0, fearful: 3 } }
+                ]
+            },
+            {
+                text: t('question6'),
+                options: [
+                    { text: t('question6Option1'), score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+                    { text: t('question6Option2'), score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+                    { text: t('question6Option3'), score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+                    { text: t('question6Option4'), score: { secure: 0, anxious: 1, avoidant: 0, fearful: 3 } }
+                ]
+            }
+        ];
+
+        const attachmentStyles = {
+            secure: {
+                title: t('secureAttachmentTitle'),
+                icon: '❤️',
+                class: 'secure',
+                description: t('secureAttachmentDescription'),
+                traits: [t('secureAttachmentTrait1'), t('secureAttachmentTrait2'), t('secureAttachmentTrait3'), t('secureAttachmentTrait4')],
+                growth: t('secureAttachmentGrowth')
+            },
+            anxious: {
+                title: t('anxiousAttachmentTitle'),
+                icon: '⚡',
+                class: 'anxious',
+                description: t('anxiousAttachmentDescription'),
+                traits: [t('anxiousAttachmentTrait1'), t('anxiousAttachmentTrait2'), t('anxiousAttachmentTrait3'), t('anxiousAttachmentTrait4')],
+                growth: t('anxiousAttachmentGrowth')
+            },
+            avoidant: {
+                title: t('avoidantAttachmentTitle'),
+                icon: '🛡️',
+                class: 'avoidant',
+                description: t('avoidantAttachmentDescription'),
+                traits: [t('avoidantAttachmentTrait1'), t('avoidantAttachmentTrait2'), t('avoidantAttachmentTrait3'), t('avoidantAttachmentTrait4')],
+                growth: t('avoidantAttachmentGrowth')
+            },
+            fearful: {
+                title: t('fearfulAttachmentTitle'),
+                icon: '👥',
+                class: 'fearful',
+                description: t('fearfulAttachmentDescription'),
+                traits: [t('fearfulAttachmentTrait1'), t('fearfulAttachmentTrait2'), t('fearfulAttachmentTrait3'), t('fearfulAttachmentTrait4')],
+                growth: t('fearfulAttachmentGrowth')
+            }
+        };
+
+        function calculateResult() {
+            const scores = { secure: 0, anxious: 0, avoidant: 0, fearful: 0 };
+            
+            state.answers.forEach(answer => {
+                Object.keys(scores).forEach(style => {
+                    scores[style] += answer.score[style];
+                });
+            });
+
+            const maxScore = Math.max(...Object.values(scores));
+            return Object.keys(scores).find(key => scores[key] === maxScore);
+        }
+
+        function handleAnswer(option) {
+            const app = document.getElementById('app');
+            app.classList.add('fade-out');
+            
+            state.answers.push(option);
+
+            setTimeout(() => {
+                if (state.currentQuestion < questions.length - 1) {
+                    state.currentQuestion++;
+                    renderQuiz();
+                } else {
+                    state.result = calculateResult();
+                    state.currentScreen = 'result';
+                    renderResult();
+                }
+                app.classList.remove('fade-out');
+                app.classList.add('fade-in');
+            }, 300);
+        }
+
+        function restart() {
+            const app = document.getElementById('app');
+            app.classList.add('fade-out');
+            
+            setTimeout(() => {
+                state.currentScreen = 'welcome';
+                state.currentQuestion = 0;
+                state.answers = [];
+                state.result = null;
+                renderWelcome();
+                app.classList.remove('fade-out');
+                app.classList.add('fade-in');
+            }, 300);
+        }
+
+        function startQuiz() {
+            const app = document.getElementById('app');
+            app.classList.add('fade-out');
+            
+            setTimeout(() => {
+                state.currentScreen = 'quiz';
+                renderQuiz();
+                app.classList.remove('fade-out');
+                app.classList.add('fade-in');
+            }, 300);
+        }
+
+        function renderWelcome() {
+            document.getElementById('app').innerHTML = `
+                <div class="welcome">
+                    <div class="title-container">
+                        <div class="title-glow"></div>
+                        <h1 class="title">
+                            ${t('discoverTitle')}
+                            <span class="title-gradient">
+                                ${t('attachmentStyleTitle')}
+                            </span>
+                        </h1>
+                    </div>
+                    
+                    <p class="description">
+                        ${t('welcomeDescription')}
+                    </p>
+                    
+                    <button onclick="startQuiz()" class="btn">
+                        <span>${t('beginJourneyButton')}</span>
+                        <span>→</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderQuiz() {
+            const question = questions[state.currentQuestion];
+            const progressBars = questions.map((_, index) => {
+                let statusClass = 'upcoming';
+                
+                if (index < state.currentQuestion) {
+                    statusClass = 'completed';
+                } else if (index === state.currentQuestion) {
+                    statusClass = 'current';
+                }
+                
+                return `<div class="progress-bar ${statusClass}"></div>`;
+            }).join('');
+
+            const optionButtons = question.options.map((option, index) => `
+                <button onclick='handleAnswer(${JSON.stringify(option)})' class="option-btn">
+                    ${option.text}
+                </button>
+            `).join('');
+
+            document.getElementById('app').innerHTML = `
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bars">
+                            ${progressBars}
+                        </div>
+                        <span class="progress-text">
+                            ${state.currentQuestion + 1} ${t('progressIndicator')} ${questions.length}
+                        </span>
+                    </div>
+
+                    <div class="quiz-card">
+                        <h2 class="question">
+                            ${question.text}
+                        </h2>
+                        
+                        <div class="options">
+                            ${optionButtons}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderResult() {
+            const style = attachmentStyles[state.result];
+            const traitBoxes = style.traits.map(trait => `
+                <div class="trait-box">${trait}</div>
+            `).join('');
+
+            document.getElementById('app').innerHTML = `
+                <div class="result-container">
+                    <div class="result-header">
+                        <div class="result-icon ${style.class}">
+                            ${style.icon}
+                        </div>
+                        
+                        <h2 class="result-title">
+                            ${style.title}
+                        </h2>
+                        
+                        <p class="result-description">
+                            ${style.description}
+                        </p>
+                    </div>
+
+                    <div class="result-content">
+                        <div class="section">
+                            <h3 class="section-title">${t('yourStrengthsTitle')}</h3>
+                            <div class="traits-grid">
+                                ${traitBoxes}
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h3 class="section-title">${t('growthPathTitle')}</h3>
+                            <p class="growth-text">
+                                ${style.growth}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="result-actions">
+                        <button onclick="restart()" class="btn">
+                            <span>${t('takeQuizAgainButton')}</span>
+                            <span>→</span>
+                            <div class="btn-glow"></div>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize
+        renderWelcome();
+    </script>
+</body>
+</html>
